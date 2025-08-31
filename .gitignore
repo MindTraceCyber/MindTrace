@@ -1,0 +1,25 @@
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Python / Node (if ever used for prototypes)
+__pycache__/
+node_modules/
+
+# Environment / secrets
+.env
+*.key
+*.pem
+*.credentials
+
+# Build / cache
+*.log
+*.tmp
+*.swp
+
+# Office / temporary exports
+~$*.docx
+~$*.pptx
+
+# Ignore personal drafts
+/private/
