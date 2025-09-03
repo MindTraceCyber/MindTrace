@@ -1,6 +1,5 @@
 'use client';
 import { useState } from 'react';
-import { createEvidence } from '../../../lib/actions/evidence';
 
 export default function EvidencePage() {
   const [file, setFile] = useState<File | null>(null);
@@ -12,14 +11,21 @@ export default function EvidencePage() {
     if (!file) return alert('Pick a file first');
     setLoading(true);
     try {
-      await createEvidence({ file, title, description });
+      const fd = new FormData();
+      fd.append('file', file);
+      if (title) fd.append('title', title);
+      if (description) fd.append('description', description);
+
+      const res = await fetch('/api/evidence', { method: 'POST', body: fd });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || 'Upload failed');
       alert('Uploaded!');
       setFile(null);
       setTitle('');
       setDescription('');
     } catch (e: any) {
       console.error(e);
-      alert(e?.message || 'Upload failed');
+      alert(e.message || 'Upload failed');
     } finally {
       setLoading(false);
     }
