@@ -17,15 +17,17 @@ export default function EvidencePage() {
       if (description) fd.append('description', description);
 
       const res = await fetch('/api/evidence', { method: 'POST', body: fd });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.error || 'Upload failed');
+      const json = (await res.json()) as { error?: string };
+      if (!res.ok) throw new Error(json?.error || 'Upload failed');
+
       alert('Uploaded!');
       setFile(null);
       setTitle('');
       setDescription('');
-    } catch (e: any) {
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : 'Upload failed';
       console.error(e);
-      alert(e.message || 'Upload failed');
+      alert(msg);
     } finally {
       setLoading(false);
     }
@@ -35,12 +37,23 @@ export default function EvidencePage() {
     <main className="p-6 space-y-3">
       <h1 className="text-xl font-bold">Evidence Upload</h1>
       <input type="file" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
-      <input className="border rounded p-2 block w-full" placeholder="Title (optional)"
-             value={title} onChange={(e) => setTitle(e.target.value)} />
-      <textarea className="border rounded p-2 block w-full" placeholder="Description (optional)"
-                value={description} onChange={(e) => setDescription(e.target.value)} />
-      <button onClick={onUpload} disabled={loading || !file}
-              className="px-4 py-2 rounded bg-blue-600 text-white disabled:opacity-50">
+      <input
+        className="border rounded p-2 block w-full"
+        placeholder="Title (optional)"
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+      />
+      <textarea
+        className="border rounded p-2 block w-full"
+        placeholder="Description (optional)"
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
+      />
+      <button
+        onClick={onUpload}
+        disabled={loading || !file}
+        className="px-4 py-2 rounded bg-blue-600 text-white disabled:opacity-50"
+      >
         {loading ? 'Uploading…' : 'Upload'}
       </button>
     </main>

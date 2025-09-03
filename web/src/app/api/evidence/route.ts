@@ -61,7 +61,7 @@ export async function POST(req: Request) {
       return new Response(JSON.stringify({ error: dbErr.message }), { status: 500 });
     }
 
-    // Append custody log
+    // Custody log
     await supabase.from('custody_log').insert({
       evidence_id: row.id,
       action: 'created',
@@ -69,7 +69,9 @@ export async function POST(req: Request) {
     });
 
     return new Response(JSON.stringify({ ok: true, evidence: row }), { status: 200 });
-  } catch (e: any) {
-    return new Response(JSON.stringify({ error: e?.message || 'Upload failed' }), { status: 500 });
+  } catch (e: unknown) {
+    const message =
+      e instanceof Error ? e.message : typeof e === 'string' ? e : 'Upload failed';
+    return new Response(JSON.stringify({ error: message }), { status: 500 });
   }
 }
